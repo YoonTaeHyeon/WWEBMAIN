@@ -1,4 +1,4 @@
-ocument.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const loginForm = document.getElementById('login_form');
     const loginBtn = document.getElementById('login_btn');
     const emailInput = document.getElementById('typeEmailX');
@@ -7,7 +7,11 @@ ocument.addEventListener('DOMContentLoaded', function () {
     const check_input = () => {
         
         const idsave_check = document.getElementById('idSaveCheck');
-        
+        const payload = {
+        id: emailValue,
+        exp: Math.floor(Date.now() / 1000) + 3600 // 1시간 (3600초)
+        };
+        const jwtToken = generateJWT(payload)
         alert('아이디, 패스워드를 체크합니다');
 
         const emailValue = emailInput.value.trim();
@@ -59,24 +63,36 @@ ocument.addEventListener('DOMContentLoaded', function () {
             setCookie("id", emailValue.value, 0); //날짜를 0 - 쿠키 삭제
         }
 
-        console.log('이메일:',emailValue)
-        console.log('비밀번호',passwordValue)
+        console.log('이메일:', emailValue);
+        console.log('비밀번호:', passwordValue);
+        session_set(); // 세션 생성
+        localStorage.setItem('jwt_token', jwtToken);
+        loginForm.submit();
 
     };
 
     loginBtn.addEventListener('click', check_input);
 
-    const sanitizedPassword = check_xss(passwordInput);
-        // check_xss 함수로 비밀번호 Sanitize
-        const sanitizedEmail = check_xss(emailInput);
-        // check_xss 함수로 비밀번호 Sanitize
-        if (!sanitizedEmail) {
-        // Sanitize된 비밀번호 사용
-        return false;
-        }
-        if (!sanitizedPassword) {
-        // Sanitize된 비밀번호 사용
-        return false;
-        }
+    function init_logined(){
+if(sessionStorage){
+        decrypt_text(); // 복호화 함수
+    }
+    else{
+        alert("세션 스토리지 지원 x");
+    }
+}
+
+    // const sanitizedPassword = check_xss(passwordInput);
+    //     // check_xss 함수로 비밀번호 Sanitize
+    //     const sanitizedEmail = check_xss(emailInput);
+    //     // check_xss 함수로 비밀번호 Sanitize
+    //     if (!sanitizedEmail) {
+    //     // Sanitize된 비밀번호 사용
+    //     return false;
+    //     }
+    //     if (!sanitizedPassword) {
+    //     // Sanitize된 비밀번호 사용
+    //     return false;
+    //     }
 
 });
