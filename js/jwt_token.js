@@ -44,12 +44,23 @@ function isAuthenticated() { // 사용자 인증 상태 확인
     return !!payload; // 페이로드 유무로 인증 상태 판단
 }
 
-export function checkAuth() { // 인증 검사 수행
-    const authenticated = isAuthenticated(); // 한 번만 검증 호출
+export function checkAuth() {
+    // 현재 페이지 경로 확인 (예: 로그인 페이지 경로가 '/login/login.html'인 경우)
+    const currentPath = window.location.pathname;
+    if (currentPath.endsWith('/login.html') || currentPath.endsWith('/index_login.html')) {
+        // 로그인 페이지에서는 인증 검사 및 리다이렉트 하지 않음
+        return;
+    }
+
+    const authenticated = isAuthenticated();
     if (authenticated) {
         alert('정상적으로 토큰이 검증되었습니다.');
+        sessionStorage.removeItem('authErrorShown');
     } else {
-        alert('토큰 검증 에러!! 인증되지 않은 접근입니다.');
-        window.location.href = '../login/login.html'; // 로그인 페이지 이동
+        if (!sessionStorage.getItem('authErrorShown')) {
+            alert('토큰 검증 에러!! 인증되지 않은 접근입니다.');
+            sessionStorage.setItem('authErrorShown', 'true');
+        }
+        window.location.replace('../login/index_login.html');
     }
 }

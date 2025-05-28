@@ -2,7 +2,6 @@ import { session_set, session_get, session_check } from './session.js';
 import { encrypt_text, decrypt_text } from './crypto.js';
 import { generateJWT, checkAuth } from './jwt_token.js';
 
-
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -20,10 +19,9 @@ function setCookie(name, value, days) {
     document.cookie = name + "=" + (value || "")  + expires + "; path=/";
 }
 
-
 // DOM이 완전히 로드된 후 초기화만 실행
 document.addEventListener('DOMContentLoaded', () => {
-    init();       // ✅ checkAuth 제거됨
+    init();
 });
 
 // 아이디 저장 등 초기 설정 함수
@@ -37,11 +35,6 @@ function init() {
     }
     session_check(); // 세션 유무 검사
 }
-document.addEventListener('DOMContentLoaded', () => {
-checkAuth();
-//init_logined();
-});
-
 
 // 로그인 관련 이벤트 핸들링
 document.addEventListener('DOMContentLoaded', function () {
@@ -108,10 +101,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         session_set(); // 세션 생성
         localStorage.setItem('jwt_token', jwtToken);
-        loginForm.submit();
+
+        // ✅ 여기서 직접 이동!
+        window.location.href = '../login/index_login.html';
     };
 
-    loginBtn.addEventListener('click', check_input);
+    // 버튼 클릭 시 기본 submit 막고 check_input만 실행
+    loginBtn.addEventListener('click', function(e) {
+        e.preventDefault(); // form submit 막기
+        check_input();
+    });
 
     function init_logined() {
         if (sessionStorage) {
